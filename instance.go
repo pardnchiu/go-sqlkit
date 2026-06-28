@@ -1,11 +1,11 @@
-package goSqlite
+package goSqlkit
 
 import (
 	"fmt"
 	"maps"
 	"sync"
 
-	"github.com/pardnchiu/go-sqlite/core"
+	"github.com/pardnchiu/go-sqlkit/core"
 )
 
 var (

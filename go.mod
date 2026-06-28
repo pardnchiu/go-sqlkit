@@ -1,4 +1,4 @@
-module github.com/pardnchiu/go-sqlite
+module github.com/pardnchiu/go-sqlkit
 
 go 1.25.1
 
