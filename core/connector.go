@@ -7,31 +7,31 @@ import (
 )
 
 func (d *Connector) Query(key, query string, args ...any) (*sql.Rows, error) {
-	return d.Read.DB.Query(query, args...)
+	return d.Read.Query(query, args...)
 }
 
 func (d *Connector) QueryContext(ctx context.Context, key, query string, args ...any) (*sql.Rows, error) {
-	return d.Read.DB.QueryContext(ctx, query, args...)
+	return d.Read.QueryContext(ctx, query, args...)
 }
 
 func (d *Connector) Exec(key, query string, args ...any) (sql.Result, error) {
-	return d.Write.DB.Exec(query, args...)
+	return d.Write.Exec(query, args...)
 }
 
 func (d *Connector) ExecContext(ctx context.Context, key, query string, args ...any) (sql.Result, error) {
-	return d.Write.DB.ExecContext(ctx, query, args...)
+	return d.Write.ExecContext(ctx, query, args...)
 }
 
 func (d *Connector) Close() {
-	if d.Read != nil && d.Read.DB != nil {
-		if err := d.Read.DB.Close(); err != nil {
+	if d.Read != nil {
+		if err := d.Read.Close(); err != nil {
 			slog.Error("failed to close read db",
 				slog.Any("error", err))
 		}
 	}
 
-	if d.Write != nil && d.Write.DB != nil {
-		if err := d.Write.DB.Close(); err != nil {
+	if d.Write != nil {
+		if err := d.Write.Close(); err != nil {
 			slog.Error("failed to close write db",
 				slog.Any("error", err))
 		}

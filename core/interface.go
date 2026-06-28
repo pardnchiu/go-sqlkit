@@ -1,9 +1,6 @@
 package core
 
-import (
-	"context"
-	"database/sql"
-)
+import "database/sql"
 
 type Config struct {
 	Path         string `json:"path"`
@@ -13,64 +10,6 @@ type Config struct {
 }
 
 type Connector struct {
-	Read  *Builder
-	Write *Builder
+	Read  *sql.DB
+	Write *sql.DB
 }
-
-// * Builder is NOT safe for concurrent use by multiple goroutines
-type Builder struct {
-	DB           *sql.DB
-	TableName    *string
-	SelectList   []string
-	UpdateList   []string
-	WhereList    []Where
-	WhereArgs    []any
-	JoinList     []Join
-	ConflictMode *conflict
-	OrderByList  []string
-	GroupByList  []string
-	HavingList   []Where
-	HavingArgs   []any
-	WithLimit    *int
-	WithOffset   *int
-	WithTotal    bool
-	WithContext  context.Context
-	WithBind     any
-	Error        []error
-}
-
-type Where struct {
-	Condition string
-	Operator  string
-}
-
-type Join struct {
-	Mode  string
-	Table string
-	On    string
-}
-
-type Column struct {
-	Name         string
-	Type         string
-	IsPrimary    bool
-	IsNullable   bool
-	AutoIncrease bool
-	IsUnique     bool
-	Default      any
-	ForeignKey   *Foreign
-}
-
-type Foreign struct {
-	Table  string
-	Column string
-}
-
-type Union struct {
-	Builder *Builder
-	All     bool
-}
-
-type conflict uint32
-
-type direction uint32

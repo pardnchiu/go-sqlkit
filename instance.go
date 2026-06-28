@@ -58,7 +58,7 @@ func New(c core.Config) (*core.Connector, error) {
 	read, err := sql.Open("sqlite3",
 		fmt.Sprintf("file:%s?"+
 			"cache=shared"+
-			"&mode=ro"+ // read-only
+			"&mode=ro"+
 			"&_query_only=1"+
 			"&_journal_mode=WAL"+
 			"&_busy_timeout=5000", c.Path))
@@ -94,7 +94,7 @@ func New(c core.Config) (*core.Connector, error) {
 	}()
 
 	return &core.Connector{
-		Read:  core.NewBuilder(read),
-		Write: core.NewBuilder(write),
+		Read:  read,
+		Write: write,
 	}, nil
 }

@@ -96,33 +96,15 @@ func TestNewIntegration(t *testing.T) {
 	}
 	defer conn.Close()
 
-	t.Run("create table via Write", func(t *testing.T) {
-		err := conn.Write.Table("users").Create(
-			core.Column{Name: "id", Type: "INTEGER", IsPrimary: true, AutoIncrease: true},
-			core.Column{Name: "name", Type: "TEXT"},
-		)
+	t.Run("Exec method", func(t *testing.T) {
+		_, err := conn.Exec("", "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)")
 		if err != nil {
-			t.Fatalf("failed to create table: %v", err)
+			t.Fatalf("create table failed: %v", err)
 		}
-	})
 
-	t.Run("insert via Write", func(t *testing.T) {
-		id, err := conn.Write.Table("users").Insert(map[string]any{"name": "Alice"})
+		_, err = conn.Exec("", "INSERT INTO users (name) VALUES (?)", "Alice")
 		if err != nil {
 			t.Fatalf("insert failed: %v", err)
-		}
-		if id < 1 {
-			t.Errorf("expected valid id, got %d", id)
-		}
-	})
-
-	t.Run("read via Read", func(t *testing.T) {
-		count, err := conn.Read.Table("users").Count()
-		if err != nil {
-			t.Fatalf("count failed: %v", err)
-		}
-		if count != 1 {
-			t.Errorf("expected 1, got %d", count)
 		}
 	})
 
@@ -138,20 +120,10 @@ func TestNewIntegration(t *testing.T) {
 		}
 	})
 
-	t.Run("Exec method", func(t *testing.T) {
+	t.Run("Exec update", func(t *testing.T) {
 		_, err := conn.Exec("", "UPDATE users SET name = 'Bob' WHERE id = 1")
 		if err != nil {
 			t.Fatalf("exec failed: %v", err)
-		}
-	})
-
-	t.Run("Read builder access", func(t *testing.T) {
-		builder := conn.Read
-		if builder == nil {
-			t.Fatal("expected builder")
-		}
-		if builder.Raw() != conn.Read.DB {
-			t.Error("expected read connection")
 		}
 	})
 }
