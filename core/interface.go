@@ -12,10 +12,13 @@ const (
 )
 
 type Config struct {
+	ID           string `json:"id"`
 	Target       target `json:"target"`
 	Path         string `json:"path"`
+	ReadPath     string `json:"read_path,omitempty"`
+	WritePath    string `json:"write_path,omitempty"`
 	Lifetime     int    `json:"lifetime,omitempty"`
-	MaxOpenConns int    `json:"max_read_conns,omitempty"`
+	MaxOpenConns int    `json:"max_open_conns,omitempty"`
 	MaxIdleConns int    `json:"max_idle_conns,omitempty"`
 }
 

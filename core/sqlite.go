@@ -47,31 +47,17 @@ func NewSQLite(c Config) (*Connector, error) {
 		return nil, fmt.Errorf("failed to ping write db: %w", err)
 	}
 
-	read, err := sql.Open("sqlite3",
-		fmt.Sprintf("file:%s?"+
-			"cache=shared"+
-			"&mode=ro"+
-			"&_query_only=1"+
-			"&_journal_mode=WAL"+
-			"&_busy_timeout=50000", c.Path))
+	readDSN := fmt.Sprintf("file:%s?"+
+		"cache=shared"+
+		"&mode=ro"+
+		"&_query_only=1"+
+		"&_journal_mode=WAL"+
+		"&_busy_timeout=50000", c.Path)
+
+	read, err := db("sqlite3", readDSN, c.MaxOpenConns, c.MaxIdleConns, lifetime(c))
 	if err != nil {
 		write.Close()
-		return nil, fmt.Errorf("failed to open read db: %w", err)
-	}
-
-	read.SetMaxOpenConns(c.MaxOpenConns)
-	read.SetMaxIdleConns(c.MaxIdleConns)
-
-	if c.Lifetime > 0 {
-		read.SetConnMaxLifetime(time.Duration(c.Lifetime) * time.Second)
-	} else {
-		read.SetConnMaxLifetime(2 * time.Minute)
-	}
-
-	if err := read.Ping(); err != nil {
-		write.Close()
-		read.Close()
-		return nil, fmt.Errorf("failed to ping read db: %w", err)
+		return nil, fmt.Errorf("read: %w", err)
 	}
 
 	go func() {
