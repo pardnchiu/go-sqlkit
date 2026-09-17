@@ -11,8 +11,7 @@ import (
 func NewSQLite(c Config) (*Connector, error) {
 	write, err := sql.Open("sqlite3",
 		fmt.Sprintf("file:%s?"+
-			"cache=shared"+
-			"&mode=rwc"+
+			"mode=rwc"+
 			"&_journal_mode=WAL"+
 			"&_busy_timeout=50000"+
 			"&_synchronous=NORMAL"+
@@ -48,8 +47,7 @@ func NewSQLite(c Config) (*Connector, error) {
 	}
 
 	readDSN := fmt.Sprintf("file:%s?"+
-		"cache=shared"+
-		"&mode=ro"+
+		"mode=ro"+
 		"&_query_only=1"+
 		"&_journal_mode=WAL"+
 		"&_busy_timeout=50000", c.Path)
