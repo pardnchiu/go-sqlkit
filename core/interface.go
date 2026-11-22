@@ -1,6 +1,9 @@
 package core
 
-import "database/sql"
+import (
+	"database/sql"
+	"sync"
+)
 
 type target int64
 
@@ -23,6 +26,8 @@ type Config struct {
 }
 
 type Connector struct {
-	Read  *sql.DB
-	Write *sql.DB
+	Read     *sql.DB
+	Write    *sql.DB
+	stop     chan struct{}
+	stopOnce sync.Once
 }

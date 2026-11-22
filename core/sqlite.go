@@ -58,13 +58,19 @@ func NewSQLite(c Config) (*Connector, error) {
 		return nil, fmt.Errorf("read: %w", err)
 	}
 
+	stop := make(chan struct{})
 	go func() {
 		ticker := time.NewTicker(30 * time.Second)
 		defer ticker.Stop()
 
-		for range ticker.C {
-			if _, err := write.Exec("PRAGMA wal_checkpoint(PASSIVE)"); err != nil {
-				fmt.Printf("checkpoint failed: %v\n", err)
+		for {
+			select {
+			case <-stop:
+				return
+			case <-ticker.C:
+				if _, err := write.Exec("PRAGMA wal_checkpoint(PASSIVE)"); err != nil {
+					fmt.Printf("checkpoint failed: %v\n", err)
+				}
 			}
 		}
 	}()
@@ -72,5 +78,6 @@ func NewSQLite(c Config) (*Connector, error) {
 	return &Connector{
 		Read:  read,
 		Write: write,
+		stop:  stop,
 	}, nil
 }

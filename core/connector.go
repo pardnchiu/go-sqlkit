@@ -26,6 +26,10 @@ func (c *Connector) ExecContext(ctx context.Context, query string, args ...any) 
 }
 
 func (c *Connector) Close() {
+	if c.stop != nil {
+		c.stopOnce.Do(func() { close(c.stop) })
+	}
+
 	if c.Write != nil {
 		if err := c.Write.Close(); err != nil {
 			slog.Error("failed to close write db",
